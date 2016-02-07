@@ -29,33 +29,52 @@ def parse_file(datafile):
     sheet_data = [[sheet.cell_value(r, col) for col in range(sheet.ncols)] for r in range(sheet.nrows)]
 
     # In this example we iterate along of the rows. When we are in row 50, the data is printed
-    print "\nCells in a nested loop (row 50):"    
-    for row in range(sheet.nrows):
-        for col in range(sheet.ncols):
-            if row == 50:
-                print sheet.cell_value(row, col),
+    # print "\nCells in a nested loop (row 50):"    
+    # for row in range(sheet.nrows):
+    #    for col in range(sheet.ncols):
+    #        if row == 50:
+    #            print sheet.cell_value(row, col),
 
     ### other useful methods:
-    print "\n\nROWS, COLUMNS, and CELLS:"
-    print "Number of rows in the sheet:", 
-    print sheet.nrows
-    print "Type of data in cell (row 3, col 2):", 
-    print sheet.cell_type(3, 2)
-    print "Value in cell (row 3, col 2):", 
-    print sheet.cell_value(3, 2)
-    print "Get a slice of values in column 3, from rows 1-3:"
-    print sheet.col_values(3, start_rowx=1, end_rowx=4)
+    # print "\n\nROWS, COLUMNS, and CELLS:"
+    # print "Number of rows in the sheet:", 
+    # print sheet.nrows
+    # print "Type of data in cell (row 3, col 2):", 
+    # print sheet.cell_type(3, 2)
+    # print "Value in cell (row 3, col 2):", 
+    # print sheet.cell_value(3, 2)
+    # print "Get a slice of values in column 3, from rows 1-3:"
+    # print sheet.col_values(3, start_rowx=1, end_rowx=4)
+    
+    # print "\nDATES:"
+    # print "Type of data in cell (row 1, col 0):", 
+    # print sheet.cell_type(1, 0)
+    # exceltime = sheet.cell_value(1, 0)
+    # print "Time in Excel format:",
+    # print exceltime
+    # print "Convert time to a Python datetime tuple, from the Excel float:",
+    # print xlrd.xldate_as_tuple(exceltime, 0)
 
-    print "\nDATES:"
-    print "Type of data in cell (row 1, col 0):", 
-    print sheet.cell_type(1, 0)
-    exceltime = sheet.cell_value(1, 0)
-    print "Time in Excel format:",
-    print exceltime
-    print "Convert time to a Python datetime tuple, from the Excel float:",
-    print xlrd.xldate_as_tuple(exceltime, 0)
+    # Print several information about all the values of the column 1 (2nd column in excel):
+    # max value, min value, sum of all the values, number of rows (except the header row), average value
+    # position for max and min values
+    cv = sheet.col_values(1, start_rowx=1, end_rowx=None)    
+    maxval = max(cv)
+    minval = min(cv)
+    avgval = sum(cv) / float(len(cv))
+    maxpos = cv.index(maxval) + 1
+    minpos = cv.index(minval) + 1
+    data = {
+            'maxtime': xlrd.xldate_as_tuple(sheet.cell_value(maxpos, 0), 0),
+            'maxvalue': round(maxval, 10),
+            'mintime': xlrd.xldate_as_tuple(sheet.cell_value(minpos, 0), 0),
+            'minvalue': round(minval, 10),
+            'avgcoast': round(avgval, 10)
+    }
+    import pprint
+    pprint.pprint(data)
     
-    
+    # Initialize the dictionary where we will store the result    
     data = {
             'maxtime': (0, 0, 0, 0, 0, 0),
             'maxvalue': 0,
@@ -63,6 +82,25 @@ def parse_file(datafile):
             'minvalue': 0,
             'avgcoast': 0
     }
+
+    for row in range(sheet.nrows):
+        if row == 1:
+            data['maxvalue'] = round(sheet.cell_value(row, 1), 10)
+            data['minvalue'] = round(sheet.cell_value(row, 1), 10)
+            totalcost = sheet.cell_value(row, 1)
+            data['maxtime'] = xlrd.xldate_as_tuple(sheet.cell_value(row, 0), 0)
+            data['mintime'] = xlrd.xldate_as_tuple(sheet.cell_value(row, 0), 0)
+        if (row > 1):
+            totalcost = totalcost + round(sheet.cell_value(row, 1), 10)
+            if sheet.cell_value(row, 1) > data['maxvalue']:
+                data['maxvalue'] = round(sheet.cell_value(row, 1), 10)
+                data['maxtime'] = xlrd.xldate_as_tuple(sheet.cell_value(row, 0), 0)
+            if sheet.cell_value(row, 1) < data['minvalue']:
+                data['minvalue'] = round(sheet.cell_value(row, 1), 10)
+                data['mintime'] = xlrd.xldate_as_tuple(sheet.cell_value(row, 0), 0)
+
+    data['avgcoast'] = round(totalcost / (sheet.nrows - 1), 10)
+
     return data
 
 
@@ -73,5 +111,6 @@ def test():
     # assert data['maxtime'] == (2013, 8, 13, 17, 0, 0)
     # assert round(data['maxvalue'], 10) == round(18779.02551, 10)
 
+    print data
 
 test()
