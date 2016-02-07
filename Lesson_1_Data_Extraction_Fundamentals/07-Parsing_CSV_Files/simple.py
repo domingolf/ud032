@@ -15,22 +15,44 @@ DATAFILE = "beatles-diskography.csv"
 
 def parse_file(datafile):
     data = []
+
+    # Open the file in binary mode (b) and read only (r)
     with open(datafile, "rb") as f:
+        # THE KEYS
+        # Read the first line of the file. This will give us a list of values that we can use as keys
+        # for each one of the data items that we pull out of the file later on
+        header = f.readline().split(",")
+
+        # THE VALUES
+        # We read the next 10 lines of the file
+        counter = 0
         for line in f:
-            print line
+            if counter == 10:
+                break
+            fields = line.split(",")
+
+            # Initialize an empty entry in the dictionary
+            entry = {}
+
+            for i, value in enumerate(fields):
+                entry[header[i].strip()] = value.strip()
+
+            data.append(entry)
+            counter += 1
 
     return data
 
-
 def test():
-    # a simple test of your implemetation
     datafile = os.path.join(DATADIR, DATAFILE)
     d = parse_file(datafile)
-    firstline = {'Title': 'Please Please Me', 'UK Chart Position': '1', 'Label': 'Parlophone(UK)', 'Released': '22 March 1963', 'US Chart Position': '-', 'RIAA Certification': 'Platinum', 'BPI Certification': 'Gold'}
-    tenthline = {'Title': '', 'UK Chart Position': '1', 'Label': 'Parlophone(UK)', 'Released': '10 July 1964', 'US Chart Position': '-', 'RIAA Certification': '', 'BPI Certification': 'Gold'}
 
-    assert d[0] == firstline
-    assert d[9] == tenthline
+    # Test to know how the dictinoary should be loaded
+    #
+    # firstline = {'Title': 'Please Please Me', 'UK Chart Position': '1', 'Label': 'Parlophone(UK)', 'Released': '22 March 1963', 'US Chart Position': '-', 'RIAA Certification': 'Platinum', 'BPI Certification': 'Gold'}
+    # tenthline = {'Title': '', 'UK Chart Position': '1', 'Label': 'Parlophone(UK)', 'Released': '10 July 1964', 'US Chart Position': '-', 'RIAA Certification': '', 'BPI Certification': 'Gold'}
+    # assert d[0] == firstline
+    # assert d[9] == tenthline
 
+    print d[0]
     
 test()
