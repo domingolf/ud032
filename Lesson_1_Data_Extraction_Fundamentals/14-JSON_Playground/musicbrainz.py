@@ -1,6 +1,5 @@
-# To experiment with this code freely you will have to run this code locally.
-# We have provided an example json output here for you to look at,
-# but you will not be able to run any queries through our UI.
+# -*- coding: iso-8859-1 -*-
+
 import json
 import requests
 
@@ -38,22 +37,47 @@ def pretty_print(data, indent=4):
 
 
 def main():
+    # 1º) ¿Cuantos grupos musicales se llaman "FIRST AID KIT"?
+    # http://musicbrainz.org/ws/2/artist/?query=artist:FIRST+AID+KIT&fmt=json
+    results = query_by_name(ARTIST_URL, query_type["simple"], "FIRST AID KIT")
+    print "1º)", len(results["artists"])
+
+    # 2º) ¿Cuál es el nombre de la "begin-area" del grupo "Queen"?
+    results = query_by_name(ARTIST_URL, query_type["simple"], "Queen")
+    print "2º)", results["artists"][0]["begin-area"]["name"]
+
+    # 3º) ¿Cuál es el alias en español del grupo "Beatles"?
+    results = query_by_name(ARTIST_URL, query_type["simple"], "Beatles")
+    print "3º)", results["artists"][0]["aliases"][5]["name"]
+
+    # 4º) ¿Cuál es la desambiguación para el grupo "Nirvana"?
     results = query_by_name(ARTIST_URL, query_type["simple"], "Nirvana")
-    pretty_print(results)
+    print "4º)", results["artists"][0]["disambiguation"]
 
-    artist_id = results["artists"][1]["id"]
-    print "\nARTIST:"
-    pretty_print(results["artists"][1])
+    # 5º) ¿Qué año se creó el grupo "One direction"?
+    results = query_by_name(ARTIST_URL, query_type["simple"], "One Direction")
+    print "5º)", results["artists"][0]["life-span"]["begin"][:4]
 
-    artist_data = query_site(ARTIST_URL, query_type["releases"], artist_id)
-    releases = artist_data["releases"]
-    print "\nONE RELEASE:"
-    pretty_print(releases[0], indent=2)
-    release_titles = [r["title"] for r in releases]
+    # http://musicbrainz.org/ws/2/artist/?query=artist:Nirvana&fmt=json
+    # results = query_by_name(ARTIST_URL, query_type["simple"], "Nirvana")
+    # pretty_print(results)
 
-    print "\nALL TITLES:"
-    for t in release_titles:
-        print t
+    # Existen varios artistas correspondientes al nombre "Nirvana". Tomamos el identificador ("id")
+    # del artista que aparece en la segunda posición ([1]) del array results["artists"]
+    # artist_id = results["artists"][1]["id"]
+    # print "\nARTIST:", artist_id
+    # pretty_print(results["artists"][1])
+
+    # http://musicbrainz.org/ws/2/artist/9282c8b4-ca0b-4c6b-b7e3-4f7762dfc4d6?fmt=json&inc=releases
+    # artist_data = query_site(ARTIST_URL, query_type["releases"], artist_id)
+    # releases = artist_data["releases"]
+    # print "\nONE RELEASE:"
+    # pretty_print(releases[0], indent=2)
+    # release_titles = [r["title"] for r in releases]
+
+    # print "\nALL TITLES:"
+    # for t in release_titles:
+    #    print t
 
 
 if __name__ == '__main__':

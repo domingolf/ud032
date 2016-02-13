@@ -1,0 +1,10 @@
+requesting http://musicbrainz.org/ws/2/artist/?query=artist%3AFIRST+AID+KIT&fmt=json
+1º) 25
+requesting http://musicbrainz.org/ws/2/artist/?query=artist%3AQueen&fmt=json
+2º) London
+requesting http://musicbrainz.org/ws/2/artist/?query=artist%3ABeatles&fmt=json
+3º) Los Beatles
+requesting http://musicbrainz.org/ws/2/artist/?query=artist%3ANirvana&fmt=json
+4º) 90s US grunge band
+requesting http://musicbrainz.org/ws/2/artist/?query=artist%3AOne+Direction&fmt=json
+5º) 2010
